@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ScrollProgressIndicator from "@/components/ScrollProgressIndicator";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { DarkModeProvider } from "@/contexts/DarkModeContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,7 @@ export default function RootLayout({
             <Footer />
           </ThemeProvider>
         </DarkModeProvider>
+        <Analytics />
       </body>
     </html>
   );
