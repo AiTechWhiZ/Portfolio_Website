@@ -2,222 +2,320 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, Sparkles, Send } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-
+import { Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import ThemeSwitcher from "./ThemeSwitcher";
-import Tooltip from "./Tooltip";
-
-import ProfilePicture from "../public/images/Profile Picture.jpeg";
-
-const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Contact", href: "#contact" },
-  { name: "Resume", href: "/resume" },
-];
 
 const Navbar = () => {
   const { currentTheme } = useTheme();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
 
-  const [active, setActive] = useState("home");
-  const [hovered, setHovered] = useState<string | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [aiOpen, setAiOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const navLinks = [
+    { name: "Home", href: "#home" },
+    { name: "About", href: "#about" },
+    { name: "Skills", href: "#skills" },
+    { name: "Projects", href: "#projects" },
+    { name: "Contact", href: "#contact" },
+    { name: "Resume", href: "/resume" },
+  ];
 
+  const updateUnderlinePosition = (linkElement: HTMLElement) => {
+    const navContainer = linkElement.parentElement;
+    if (navContainer) {
+      const containerRect = navContainer.getBoundingClientRect();
+      const linkRect = linkElement.getBoundingClientRect();
+      setUnderlineStyle({
+        left: linkRect.left - containerRect.left,
+        width: linkRect.width,
+      });
+    }
+  };
+
+  // Check if we're on the resume page (only on mount)
   useEffect(() => {
-    const sections = document.querySelectorAll("section");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.6 },
-    );
-
-    sections.forEach((sec) => observer.observe(sec));
-    return () => observer.disconnect();
+    if (window.location.pathname === "/resume") {
+      setActiveSection("/resume");
+    }
   }, []);
+
+  // Handle scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+
+      // Update active section based on scroll position (exclude Resume link)
+      const sections = navLinks
+        .filter((link) => link.href.startsWith("#"))
+        .map((link) => link.href.substring(1));
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+
+  // Initialize and update underline position when active section or hovered link changes
+  useEffect(() => {
+    const targetLink = hoveredLink || activeSection;
+    const linkElement = document.querySelector(
+      `[data-nav-link="${targetLink}"]`,
+    ) as HTMLElement;
+    if (linkElement) {
+      updateUnderlinePosition(linkElement);
+    }
+  }, [activeSection, hoveredLink]);
 
   const scrollToSection = (href: string) => {
     if (href.startsWith("/")) {
-      router.push(href);
-      return;
+      // Navigate to page (Resume)
+      window.location.href = href;
+    } else {
+      // If on resume page, navigate to home first, then scroll to section
+      if (window.location.pathname === "/resume") {
+        window.location.href = `/#${href.substring(1)}`;
+      } else {
+        // Scroll to section
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     }
-
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-
-    setMobileOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
-  const current = hovered || active;
-
   return (
-    <>
-      <motion.nav
-        initial={{ y: -80 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 w-full z-50 backdrop-blur-xl bg-white/10 dark:bg-black/20 border-b border-white/10"
-      >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                src={ProfilePicture}
-                alt="profile"
-                fill
-                sizes="40px"
-                loading="eager"
-                className="object-cover"
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-gray-200/20 dark:border-gray-800/20"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex-shrink-0 flex items-center space-x-3"
+          >
+            <a
+              href="#home"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("#home");
+              }}
+              className="flex items-center space-x-3"
+            >
+              {/* Photo */}
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gradient-to-r from-blue-500 to-purple-600">
+              </div>
+              {/* Initials */}
+              <span
+                className={`text-2xl font-bold bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
+              >
+                JD
+              </span>
+            </a>
+          </motion.div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4 relative">
+              {navLinks.map((link, index) => (
+                <motion.a
+                  key={link.name}
+                  data-nav-link={
+                    link.href.startsWith("#")
+                      ? link.href.substring(1)
+                      : link.href
+                  }
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onMouseEnter={() =>
+                    setHoveredLink(
+                      link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href,
+                    )
+                  }
+                  onMouseLeave={() => setHoveredLink(null)}
+                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    activeSection ===
+                      (link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href) ||
+                    hoveredLink ===
+                      (link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href)
+                      ? `bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`
+                      : "text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  {link.name}
+                </motion.a>
+              ))}
+              {/* Moving Underline */}
+              <motion.div
+                className={`absolute bottom-0 h-0.5 bg-gradient-to-r ${currentTheme.from} ${currentTheme.to}`}
+                animate={{
+                  left: underlineStyle.left,
+                  width: underlineStyle.width,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
               />
             </div>
-
-            <span
-              className={`text-xl font-bold bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
-            >
-              Vijay
-            </span>
           </div>
 
-          {/* NAV */}
-          <div className="hidden md:flex items-center gap-6 relative">
-            {navLinks.map((link) => {
-              const key = link.href.startsWith("#")
-                ? link.href.substring(1)
-                : link.href;
+          {/* Theme Switcher & Mobile Menu Button */}
+          <div className="flex items-center space-x-4">
+            {/* Color Theme Switcher */}
+            <ThemeSwitcher />
 
-              return (
-                <div key={link.name} className="relative">
-                  <motion.a
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.href);
-                    }}
-                    onMouseEnter={() => setHovered(key)}
-                    onMouseLeave={() => setHovered(null)}
-                    className={`px-2 py-1 text-sm ${
-                      current === key
-                        ? `bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`
-                        : "text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {link.name}
-                  </motion.a>
-
-                  {current === key && (
-                    <motion.div
-                      layoutId="underline"
-                      className={`absolute left-0 right-0 -bottom-1 h-0.5 bg-linear-to-r ${currentTheme.from} ${currentTheme.to}`}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="flex items-center gap-3">
-            <Tooltip content="Change Theme Color">
-              <ThemeSwitcher />
-            </Tooltip>
-
-            {/* Dark Toggle */}
-            <Tooltip
-              content={
-                isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
-              }
-            >
+            {/* Dark/Light Toggle */}
+            <div className="relative group">
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 180 }}
                 whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
                 onClick={toggleDarkMode}
-                className={`p-2 rounded-lg bg-linear-to-r ${currentTheme.from} ${currentTheme.to} text-white`}
+                className={`p-2 rounded-lg bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} text-white hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl`}
               >
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </motion.button>
-            </Tooltip>
+              {/* Tooltip showing current color theme */}
+              <div className="absolute -bottom-8 right-0 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                Theme: {currentTheme.name}
+              </div>
+            </div>
 
-            {/* 🤖 AI BUTTON */}
-            <Tooltip content="Toggle AI Assistant">
-              <motion.button
-                whileHover={{ scale: 1.1, rotate: 180 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                onClick={() => setAiOpen(!aiOpen)}
-                className={`p-2 rounded-lg bg-linear-to-r ${currentTheme.from} ${currentTheme.to} text-white shadow-lg`}
-              >
-                <Sparkles size={18} />
-              </motion.button>
-            </Tooltip>
-
-            {/* MOBILE */}
+            {/* Mobile menu button */}
             <div className="md:hidden">
-              <button onClick={() => setMobileOpen(!mobileOpen)}>
-                {mobileOpen ? <X /> : <Menu />}
-              </button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </motion.button>
             </div>
           </div>
         </div>
-      </motion.nav>
+      </div>
 
-      {/* 🤖 AI POPUP */}
+      {/* Mobile Menu */}
       <AnimatePresence>
-        {aiOpen && (
+        {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-6 right-6 w-80 h-100 backdrop-blur-xl bg-white/10 dark:bg-black/30 border border-gray-300 dark:border-white/10 rounded-xl shadow-2xl z-50 flex flex-col"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white/95 dark:bg-black/95 backdrop-blur-lg border-t border-gray-200/20 dark:border-gray-800/20"
           >
-            {/* Header */}
-            <div className="flex justify-between items-center p-3 border-b border-gray-200 dark:border-white/10">
-              <span className="text-gray-900 dark:text-white font-semibold">
-                AI Assistant
-              </span>
-              <button onClick={() => setAiOpen(false)}>
-                <X size={18} className="text-gray-900 dark:text-white" />
-              </button>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 p-3 overflow-y-auto text-gray-900 dark:text-white text-sm">
-              <p className="opacity-70">Ask me anything 👋</p>
-            </div>
-
-            {/* Input */}
-            <div className="p-3 flex gap-2">
-              <input
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask me anything... ✨"
-                className="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white outline-none"
+            <div className="px-2 pt-2 pb-3 space-y-1 relative">
+              {navLinks.map((link, index) => (
+                <motion.a
+                  key={link.name}
+                  data-nav-link={
+                    link.href.startsWith("#")
+                      ? link.href.substring(1)
+                      : link.href
+                  }
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.02, x: 10 }}
+                  whileTap={{ scale: 0.98 }}
+                  onMouseEnter={() =>
+                    setHoveredLink(
+                      link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href,
+                    )
+                  }
+                  onMouseLeave={() => setHoveredLink(null)}
+                  className={`relative block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                    activeSection ===
+                      (link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href) ||
+                    hoveredLink ===
+                      (link.href.startsWith("#")
+                        ? link.href.substring(1)
+                        : link.href)
+                      ? `bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`
+                      : "text-gray-700 dark:text-gray-300"
+                  }`}
+                >
+                  {link.name}
+                </motion.a>
+              ))}
+              {/* Moving Underline for Mobile */}
+              <motion.div
+                className={`absolute bottom-0 h-0.5 bg-gradient-to-r ${currentTheme.from} ${currentTheme.to}`}
+                animate={{
+                  left: underlineStyle.left,
+                  width: underlineStyle.width,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
               />
-              <button
-                className={`p-2 rounded-lg bg-linear-to-r ${currentTheme.from} ${currentTheme.to}`}
-              >
-                <Send size={16} className="text-white" />
-              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </motion.nav>
   );
 };
 

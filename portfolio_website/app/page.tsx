@@ -24,9 +24,9 @@ export default function Home() {
           className="text-center max-w-4xl"
         >
           <h1
-            className={`text-5xl md:text-7xl leading-relaxed md:leading-relaxed font-bold mb-6 bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
+            className={`text-5xl md:text-7xl font-bold mb-6 bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
           >
-            Vijay Sajin
+            John Doe
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8">
             Full-Stack Developer & UI/UX Enthusiast
@@ -177,10 +177,10 @@ export default function Home() {
                     technologies.
                   </p>
                   <div className="flex space-x-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-skin-600 dark:bg-blue-900/30 text-white dark:text-blue-400 rounded-full text-sm">
                       React
                     </span>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-skin-600 dark:bg-green-900/30 text-white dark:text-green-400 rounded-full text-sm">
                       Node.js
                     </span>
                   </div>

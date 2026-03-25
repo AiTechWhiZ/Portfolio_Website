@@ -76,7 +76,7 @@ const Footer = () => {
             whileHover={{ scale: 1.1, rotate: 360 }}
             whileTap={{ scale: 0.9 }}
             onClick={scrollToTop}
-            className={`fixed bottom-8 right-8 z-40 p-4 bg-linear-to-r ${currentTheme.from} ${currentTheme.to} text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group`}
+            className={`fixed bottom-8 right-8 z-40 p-4 bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group`}
             aria-label="Back to top"
           >
             <ArrowUp size={24} className="group-hover:animate-bounce" />
@@ -97,7 +97,7 @@ const Footer = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className={`text-2xl font-bold bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
+                className={`text-2xl font-bold bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
               >
                 John Doe
               </motion.h3>
@@ -119,7 +119,7 @@ const Footer = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className={`text-lg font-semibold bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
+                className={`text-lg font-semibold bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
               >
                 Quick Links
               </motion.h4>
@@ -140,14 +140,14 @@ const Footer = () => {
                       }}
                       className={`text-gray-600 dark:text-gray-400 transition-colors relative group`}
                       onMouseEnter={(e) => {
-                        e.currentTarget.className = e.currentTarget.className.replace('text-gray-600 dark:text-gray-400', `bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent relative group`);
+                        e.currentTarget.className = e.currentTarget.className.replace('text-gray-600 dark:text-gray-400', `bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent relative group`);
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.className = e.currentTarget.className.replace(`bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent relative group`, 'text-gray-600 dark:text-gray-400 transition-colors relative group');
+                        e.currentTarget.className = e.currentTarget.className.replace(`bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent relative group`, 'text-gray-600 dark:text-gray-400 transition-colors relative group');
                       }}
                     >
                       {link}
-                      <div className={`absolute bottom-0 left-0 h-0.5 bg-linear-to-r ${currentTheme.from} ${currentTheme.to} w-0 group-hover:w-full transition-all duration-300`}></div>
+                      <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} w-0 group-hover:w-full transition-all duration-300`}></div>
                     </a>
                   </li>
                 ))}
@@ -161,7 +161,7 @@ const Footer = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
-                className={`text-lg font-semibold bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
+                className={`text-lg font-semibold bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent`}
               >
                 Connect With Me
               </motion.h4>
@@ -184,17 +184,17 @@ const Footer = () => {
                         className={`relative flex items-center justify-center w-10 h-10 bg-orange-50 dark:bg-gray-800 rounded-xl text-gray-600 dark:text-gray-400 transition-all duration-300 group`}
                         onMouseEnter={(e) => {
                           setHoveredIcon(social.name);
-                          e.currentTarget.className = e.currentTarget.className.replace('text-gray-600 dark:text-gray-400', `text-white bg-linear-to-r ${currentTheme.from} ${currentTheme.to}`);
+                          e.currentTarget.className = e.currentTarget.className.replace('text-gray-600 dark:text-gray-400', `text-white bg-gradient-to-r ${currentTheme.from} ${currentTheme.to}`);
                         }}
                         onMouseLeave={(e) => {
                           setHoveredIcon(null);
-                          e.currentTarget.className = e.currentTarget.className.replace(`text-white bg-linear-to-r ${currentTheme.from} ${currentTheme.to}`, 'text-gray-600 dark:text-gray-400');
+                          e.currentTarget.className = e.currentTarget.className.replace(`text-white bg-gradient-to-r ${currentTheme.from} ${currentTheme.to}`, 'text-gray-600 dark:text-gray-400');
                         }}
                         whileHover={{ scale: 1.2, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
                       >
                         <Icon size={20} className="group-hover:animate-pulse" />
-                        <div className={`absolute inset-0 rounded-xl bg-linear-to-r ${currentTheme.from} ${currentTheme.to} opacity-0 group-hover:opacity-20 transition-opacity`} />
+                        <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} opacity-0 group-hover:opacity-20 transition-opacity`} />
                       </motion.a>
                       <AnimatePresence>
                         {hoveredIcon === social.name && (
@@ -275,10 +275,10 @@ const Footer = () => {
                     }}
                     className={`text-gray-500 dark:text-gray-400 transition-colors flex items-center space-x-1`}
                     onMouseEnter={(e) => {
-                      e.currentTarget.className = e.currentTarget.className.replace('text-gray-500 dark:text-gray-400', `bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent flex items-center space-x-1`);
+                      e.currentTarget.className = e.currentTarget.className.replace('text-gray-500 dark:text-gray-400', `bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent flex items-center space-x-1`);
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.className = e.currentTarget.className.replace(`bg-linear-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent flex items-center space-x-1`, 'text-gray-500 dark:text-gray-400 flex items-center space-x-1');
+                      e.currentTarget.className = e.currentTarget.className.replace(`bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} bg-clip-text text-transparent flex items-center space-x-1`, 'text-gray-500 dark:text-gray-400 flex items-center space-x-1');
                     }}
                   >
                     <span>{link.name}</span>

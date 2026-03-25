@@ -32,7 +32,7 @@ const ScrollProgressIndicator = () => {
       className="fixed top-0 left-0 right-0 z-[60] h-1 bg-gray-200/20 dark:bg-gray-800/20 backdrop-blur-sm"
     >
       <motion.div
-        className={`h-full bg-linear-to-r ${currentTheme.from} ${currentTheme.to} origin-left`}
+        className={`h-full bg-gradient-to-r ${currentTheme.from} ${currentTheme.to} origin-left`}
         style={{ scaleX: scrollProgress / 100 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       />
